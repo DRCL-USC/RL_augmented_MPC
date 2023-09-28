@@ -1,3 +1,3 @@
 # RL_augmented_MPC
 
-upload implementation after code cleanup
+upload implementation after code cleanup and lisensing
