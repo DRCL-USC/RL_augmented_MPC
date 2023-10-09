@@ -1,3 +1,5 @@
 # RL_augmented_MPC
 
-upload implementation after code cleanup and licensing
+initial commit of training module
+
+upload experiment part and complete readme soon
