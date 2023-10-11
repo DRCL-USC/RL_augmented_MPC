@@ -144,10 +144,6 @@ config_PPO = {"env": DummyQuadrupedEnv,
               "preprocessor_pref": "rllib",  # what are these even doing? anything?
               # "batch_mode": "complete_episodes", #"truncate_episodes",
               "batch_mode": "truncate_episodes",
-              # "custom_preprocessor": "NoPreprocessor"
-            #   "ignore_worker_failures": True,
-            #   "recreate_failed_workers": True,
-              # this seemed to have an effect
               "no_done_at_end": True,
               # "soft_horizon": True,
               # "horizon": None, # changing from 501

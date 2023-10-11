@@ -41,11 +41,8 @@ class MPCLocomotion:
         self.horizonLength = 10
         self.dt = _dt
 
-        self.trotting = gait(self.horizonLength, np.array([0, 5, 5, 0]),  np.array([3, 3, 3, 3]), "Trotting")
-        # self.trotting = gait(self.horizonLength, np.array([0, 5, 5, 0]),  np.array([5, 5, 5, 5]), "Trotting")
-        self.standing = gait(self.horizonLength, np.array([0, 0, 0, 0]),  np.array([10, 10, 10, 10]), "Standing")
-        self.bounding = gait(self.horizonLength, np.array([0, 0, 5, 5]),  np.array([4, 4, 4, 4]), "Bounding")
-        self.galloping = gait(self.horizonLength, np.array([0,2,7,9]), np.array([4,4,4,4]),"Galloping")
+        # self.trotting = gait(self.horizonLength, np.array([0, 5, 5, 0]),  np.array([3, 3, 3, 3]), "Trotting")
+        self.trotting = gait(self.horizonLength, np.array([0, 5, 5, 0]),  np.array([5, 5, 5, 5]), "Trotting")
 
         self.dtMPC = self.dt * self.iterationsBetweenMPC
         self.default_iterations_between_mpc = self.iterationsBetweenMPC
@@ -211,10 +208,6 @@ class MPCLocomotion:
             # print("f_ff ", self.f_ff)
 
     def run(self, robot):
-
-        # self.gait = self.standing
-        # self.gait = self.bounding
-        # self.gait = self.galloping
         
         self.p_com_world = robot.position
         self.v_com_world = robot.vWorld
@@ -319,13 +312,8 @@ class MPCLocomotion:
                 self.v_des_leg[foot] = self.R_body @ (vDesFoot - self.v_com_world)
                 self.contactState[foot] = 0
 
-                # if robot.GetFootContacts()[foot]:
-                #     print("foot in contact ", foot) 
-                #     print("corresponding pahse ", swingPhases[foot])
-
             else:
                 self.firstSwing[foot] = True
-                # self.footSwingTrajectories[foot].computeSwingTrajectory(swingPhases[foot], self.swingTimes[foot])
                 vDesFoot = np.zeros(3)
                 self.v_des_leg[foot] = self.R_body @ (vDesFoot - self.v_com_world)
                 self.contactState[foot] = 1
