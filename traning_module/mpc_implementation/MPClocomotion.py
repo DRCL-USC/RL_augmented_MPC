@@ -231,7 +231,7 @@ class MPCLocomotion:
 
         for i in range(4):
             self.rFoot[i] = self.foot_positions[i] @ self.R_body
-            self.pFoot[i] = self.p_com_world + self.foot_positions[i] @ self.R_body
+            self.pFoot[i] = self.p_com_world + self.rFoot[i]
         
         if self.firstRun:
             self.xStart = robot.position[0]
