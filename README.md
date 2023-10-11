@@ -12,6 +12,6 @@ Go into README files of each folder for details
 
 ## TODO
 code cleanup
-upload experiment code and readme
+documentation
 
 
