@@ -26,7 +26,9 @@ or
     *`mpc_implementation/MPCLocomotion.py` runs the MPC optimization at desired frequency while updating the swing trajectory for swing foot. Everything is transformed into world/odometry frame to feed to the solver similar to Cheetah-Software (https://github.com/dbdxnuliba/mit-biomimetics_Cheetah). 
 
 ## Train a policy
--`cd learning \ python3 train_mpc.py` 
+-`cd learning`
+-`python3 train_mpc.py` 
 
 ## Test the policy
--`cd learning \ python3 test_mlp.py` 
+-`cd learning`
+-`python3 test_mlp.py` 
