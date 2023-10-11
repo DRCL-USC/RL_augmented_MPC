@@ -25,14 +25,4 @@ class VectorNavOrientationEstimator : public GenericEstimator {
   virtual void setup() {}
 };
 
-/*!
- * "Cheater" estimator for orientation which always returns the correct value in simulation
- */
-
-class CheaterOrientationEstimator : public GenericEstimator {
- public:
-  virtual void run();
-  virtual void setup() {}
-};
-
 #endif
