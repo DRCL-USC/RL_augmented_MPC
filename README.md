@@ -8,9 +8,9 @@ Software pacakge for RL-agumented MPC for quadurped locomotion. See experiment v
 Note: The training module doesn't interface directly with hardware !!!
 
 ## Dependencies
-    Go into README files of each folder for detailes
+Go into README files of each folder for detailes
 
 ## TODO
-    code cleanup
+code cleanup
 
 
