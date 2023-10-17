@@ -44,8 +44,8 @@ Make sure to pass the following in config (or significantly increases training t
 VecNormalize env first, and use that in rllib (this will fix the observation/reward scaling like in SB)
 """
 # monitor_dir = datetime.now().strftime("MPC-foot-react-%m%d-%H-%M") + '/'
-monitor_dir = datetime.now().strftime("MPC-fast-running-new-%m%d-%H-%M") + '/'
-# monitor_dir = datetime.now().strftime("MPC-adaptive-new-%m%d-%H-%M") + '/'
+# monitor_dir = datetime.now().strftime("MPC-fast-running-new-%m%d-%H-%M") + '/'
+monitor_dir = datetime.now().strftime("MPC-adaptive-new-%m%d-%H-%M") + '/'
 SAVE_RESULTS_PATH = os.path.join('./ray_results_ppo', monitor_dir)
 
 ALG = "PPO"

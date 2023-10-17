@@ -51,11 +51,11 @@ class QuadrupedGymEnv(gym.Env):
         self._obs_hist_len = obs_hist_len
         self._MAX_EP_LEN = EPISODE_LENGTH
         self._urdf_root = assets.getDataPath()
-        # self._last_cmd = np.zeros(14)
-        self._last_cmd = np.zeros(18)
+        self._last_cmd = np.zeros(14)
+        # self._last_cmd = np.zeros(18)
 
-        # self.num_obs = 78
-        self.num_obs = 82
+        self.num_obs = 78
+        # self.num_obs = 82
 
         self._env_step_counter = 0
         self._sim_step_counter = 0
@@ -105,8 +105,8 @@ class QuadrupedGymEnv(gym.Env):
 
 
     def setupActionSpace(self):
-        # action_dim = 14
-        action_dim = 18
+        action_dim = 14
+        # action_dim = 18
         self._action_dim = action_dim
         action_high = np.array([self._action_bound] * action_dim)
         self.action_space = spaces.Box(-action_high - ACTION_EPS, action_high + ACTION_EPS, dtype=np.float32)
@@ -131,8 +131,8 @@ class QuadrupedGymEnv(gym.Env):
         self.x_tau = 0
         self.y_tau = 0
         self.z_tau = 0
-        # self._last_cmd = np.zeros(14)
-        self._last_cmd = np.zeros(18)
+        self._last_cmd = np.zeros(14)
+        # self._last_cmd = np.zeros(18)
 
         self.vel_reward = 0
         self.height_reward = 0
@@ -140,34 +140,22 @@ class QuadrupedGymEnv(gym.Env):
         self.x_world = 0
         self.y_world = 0
 
-        # self.add_random_boxes()
-        # if self.base_block_ID != -1:
-        #     self._pybullet_client.removeBody(self.base_block_ID)
-        #     self.base_block_ID = -1
-        # if np.random.random() < 0.8:
-        #     self.add_base_mass_offset()
-
-        # self.vxCommand = -0.5 + 1.0 * np.random.random()
-        # self.vyCommand = -0.5 + np.random.random()
-        # self.yaw_rate_cmd = 0
-        # -1 + 2.0 * np.random.random()
-
         self.controller.initialize()
         # self.controller.setupCmd(0.0, 0.0, 0.0, self._height)
-        if self.render:
-            if self.base_block_ID != -1:
-                self._pybullet_client.removeBody(self.base_block_ID)
-                self.base_block_ID = -1
-            # if np.random.random() < 0.8:
-            self.add_base_mass_offset(spec_mass=5.0)
-            self._settle_robot()
+        # if self.render:
+        #     if self.base_block_ID != -1:
+        #         self._pybullet_client.removeBody(self.base_block_ID)
+        #         self.base_block_ID = -1
+        #     # if np.random.random() < 0.8:
+        #     self.add_base_mass_offset(spec_mass=5.0)
+        #     self._settle_robot()
 
         self._obs_buffer = deque([np.zeros(self.observation_space.shape[0])] * self._obs_hist_len)
         for _ in range(self._obs_hist_len):
             self.getObservation()
 
-        # self._last_action_rl = np.zeros(8)
-        self._last_action_rl = np.zeros(12)
+        self._last_action_rl = np.zeros(8)
+        # self._last_action_rl = np.zeros(12)
 
         if self._render:
             self._pybullet_client.resetDebugVisualizerCamera(self._cam_dist, self._cam_yaw,
@@ -177,7 +165,7 @@ class QuadrupedGymEnv(gym.Env):
 
     def _settle_robot(self):
         kp_joint = np.array([60]*12)
-        kd_joint = np.array([5]*12)
+        kd_joint = np.array([3]*12) # change the kd value to 5 if testing the policy carrying a box on top of the robot
         pDes = np.array([0, -0.0838, -0.3, 0, 0.0838, -0.3, -0.0, -0.0838, -0.3, -0.0, 0.0838, -0.3])
         for _ in range(2000):
             qDes = np.zeros(12)
@@ -196,10 +184,6 @@ class QuadrupedGymEnv(gym.Env):
         observation.extend(list(self._robot.omegaWorld))
         observation.extend(self._robot.q)
         observation.extend(self._robot.qdot)
-        # observation.extend(self._robot.foot_position_base_frame[0].tolist())
-        # observation.extend(self._robot.foot_position_base_frame[1].tolist())
-        # observation.extend(self._robot.foot_position_base_frame[2].tolist())
-        # observation.extend(self._robot.foot_position_base_frame[3].tolist())
         observation.extend(list(self.controller.foothold_heuristic.reshape((8))))
         observation.extend(list(self._robot.contacts))
         observation.extend(list(self.controller.contactState))
@@ -228,35 +212,35 @@ class QuadrupedGymEnv(gym.Env):
     def step(self, action):
         action = np.clip(action, -self._action_bound, self._action_bound)
 
-        # if self._env_step_counter % 50 == 0 and np.random.random() > 0.8:
-        #     self.vxCommand = -1 + 2.0 * np.random.random()
-        #     self.vyCommand = -0.5 + np.random.random()
-        #     self.yaw_rate_cmd = -2 + 4.0 * np.random.random()
+        if self._env_step_counter % 50 == 0 and np.random.random() > 0.8:
+            self.vxCommand = -1 + 2.0 * np.random.random()
+            self.vyCommand = -0.5 + np.random.random()
+            self.yaw_rate_cmd = -2 + 4.0 * np.random.random()
         
         # if self._sim_step_counter < 5000:
-        self.vxCommand = 0.5
+        # self.vxCommand = 0.5
         # self.vyCommand = 0.3
         # self.yaw_rate_cmd = - 1
-        # if np.random.random() > 0.7:
-        #     self.z_force = 0
-        # else:
-        #     self.z_force = - 80 * np.random.random()
-        # if self._env_step_counter % 10 == 0 and np.random.random() > 0.5:
-        #     self.x_force = -20 + 40 * np.random.random()
-        #     self.y_force = -20 + 40 * np.random.random() 
-        #     self.x_tau = self.z_force * (-0.1 + 0.2 * np.random.random()) - 2 + 4* np.random.random()
-        #     self.y_tau = self.z_force * (-0.1 + 0.2 * np.random.random()) - 3 + 6 * np.random.random()
-        #     self.z_tau = -1 + 2 * np.random.random()
+        if np.random.random() > 0.7:
+            self.z_force = 0
+        else:
+            self.z_force = - 80 * np.random.random()
+        if self._env_step_counter % 10 == 0 and np.random.random() > 0.5:
+            self.x_force = -20 + 40 * np.random.random()
+            self.y_force = -20 + 40 * np.random.random() 
+            self.x_tau = self.z_force * (-0.1 + 0.2 * np.random.random()) - 2 + 4* np.random.random()
+            self.y_tau = self.z_force * (-0.1 + 0.2 * np.random.random()) - 3 + 6 * np.random.random()
+            self.z_tau = -1 + 2 * np.random.random()
 
         self._dt_motor_torques = []
         self._dt_motor_velocities = []
         offsets = self._get_desried_accel(action)
         self.controller.setupCmd(self.vxCommand, self.vyCommand, self.yaw_rate_cmd, self._height)
         accel_offset = offsets[0:6]
-        # foothold_offset = offsets[6:]
+        foothold_offset = offsets[6:]
         self.controller.setDesiredAccel(accel_offset)
-        # self.controller.setFootholdOffset(foothold_offset)
-        joint_angle_offset = offsets[6:]
+        self.controller.setFootholdOffset(foothold_offset)
+        # joint_angle_offset = offsets[6:]
 
         for _ in range(self._action_repeat):
             self.controller.run(self._robot)
@@ -270,7 +254,8 @@ class QuadrupedGymEnv(gym.Env):
                 if self.controller.contactState[i] == 0:
                     # self._robot.SetCartesianPD(np.diag([450, 450, 250]), np.diag([10, 10, 10]))
                     # tau[i*3:i*3+3] += self._robot.ComputeLegImpedanceControl(self.controller.p_des_leg[i], self.controller.v_des_leg[i], i)
-                    qDes[i*3:i*3+3] = self._robot.ComputeLegIK(self.controller.p_des_leg[i], i) + joint_angle_offset[i * 3:i * 3 + 3]
+                    qDes[i*3:i*3+3] = self._robot.ComputeLegIK(self.controller.p_des_leg[i], i) 
+                    # + joint_angle_offset[i * 3:i * 3 + 3]
                     Jointkp[i*3:i*3+3] = np.array([60, 60, 60])
                     Jointkd[i*3:i*3+3] = np.array([1, 1, 1])
                 else:
@@ -288,12 +273,6 @@ class QuadrupedGymEnv(gym.Env):
             self._dt_motor_velocities.append(self._robot.qdot)
 
             if self._render:
-                    # self.q_file.write( "%.5f " %self._robot.GetBaseLinearVelocity()[0])
-                    # self.q_file.write( "%.5f " %self._robot.GetBaseLinearVelocity()[1])
-                    # self.q_file.write( "%.5f " %self._robot.GetBaseLinearVelocity()[2])
-                    # self.q_file.write( "%.5f " %accel_offset[3])
-                    # self.q_file.write( "%.5f " %accel_offset[4])
-                    # self.q_file.write( "%.5f \n" %accel_offset[5])
                 self._render_step_helper()
 
         self._last_action_rl = action
@@ -318,22 +297,15 @@ class QuadrupedGymEnv(gym.Env):
                                                                'action': self._last_cmd}
     
     def _get_desried_accel(self, action):
-        # ub_foot_pos_offset = np.array([0.1, -0.1, 0.1, 0.1]*2)
-        # lb_foot_pos_offest = np.array([-0.1, 0.1, -0.1, -0.1]*2)
-        # ub_desired_accel = np.array([0.4, 0.4, 0.0]) * 9.8
-        # lb_desired_accel = np.array([-0.4, -0.4, -0.8]) * 9.8
-        # ub_desired_accel = np.array([ 5.0,  10.0,  2.0,  4.0,  2.0,  2.0,  0.1,   0.05,  0.1,   0.05,  0.05,  0.05 ,  0.05,  0.05]) # 10Nm
-        # lb_desired_accel = np.array([-5.0, -10.0, -2.0, -4.0, -2.0, -8.0, -0.05, -0.05, -0.05, -0.05, -0.1, -0.05 ,  -0.1, -0.05])
-        # ub_desired_accel = np.array([ 5.0,  10.0,  2.0,  4.0,  2.0,  2.0,  0.1,   0.05,  0.1,   0.05,  0.05,  0.05 ,  0.05,  0.05]) # 10Nm
-        # lb_desired_accel = np.array([-5.0, -10.0, -2.0, -4.0, -2.0, -8.0, -0.05, -0.05, -0.05, -0.05, -0.1, -0.05 ,  -0.1, -0.05])
+
+        ub_desired_accel = np.array([ 5.0,  10.0,  2.0,  4.0,  2.0,  2.0,  0.1,   0.05,  0.1,   0.05,  0.05,  0.05 ,  0.05,  0.05]) # 10Nm
+        lb_desired_accel = np.array([-5.0, -10.0, -2.0, -4.0, -2.0, -8.0, -0.05, -0.05, -0.05, -0.05, -0.1, -0.05 ,  -0.1, -0.05])
             # ub_desired_accel = np.array([ 5.0,  10.0,  2.0,  4.0,  2.0,  2.0,  0.4,   0.4,  0.4,   0.4,  0.4,  0.4 ,  0.4,  0.4, 0.4, 0.4, 0.4, 0.4]) # 10Nm
         # lb_desired_accel = np.array([-5.0, -10.0, -2.0, -4.0, -2.0, -8.0, -0.4, -0.4, -0.4, -0.4, -0.4, -0.4 ,  -0.4, -0.4, -0.4, -0.4 ,-0.4 ,-0.4])
-        ub_desired_accel = np.array([ 5.0,  10.0,  2.0,  4.0,  2.0,  2.0,  0.2,   0.2,  0.2, 0.2,  0.2,  0.2 ,  0.2,  0.2, 0.2, 0.2, 0.2, 0.2]) # 10Nm
-        lb_desired_accel = np.array([-5.0, -10.0, -2.0, -4.0, -2.0, -8.0, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2 ,  -0.2, -0.2, -0.2, -0.2 ,-0.2 ,-0.2])
+        # ub_desired_accel = np.array([ 5.0,  10.0,  2.0,  4.0,  2.0,  2.0,  0.2,   0.2,  0.2, 0.2,  0.2,  0.2 ,  0.2,  0.2, 0.2, 0.2, 0.2, 0.2]) # 10Nm
+        # lb_desired_accel = np.array([-5.0, -10.0, -2.0, -4.0, -2.0, -8.0, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2 ,  -0.2, -0.2, -0.2, -0.2 ,-0.2 ,-0.2])
         accel_offset = self._scale_helper(action, lb_desired_accel, ub_desired_accel)
-        # accel_offset *= 9.8
     
-        # return np.array([0.0, 0.0, 0.0, accel_offset[0], accel_offset[1], accel_offset[2]])
         return accel_offset
 
     def get_reward(self):
