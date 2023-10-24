@@ -191,7 +191,7 @@ setup(
     description="A framework for running reinforcement learning and imitation learning (mainly on quadrupeds).",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    python_requires=">=3.6.*",
+    python_requires=">=3.6",
     install_requires=INSTALL_REQUIRES,
     packages=setuptools.find_packages(),
     ext_modules=extensions,
